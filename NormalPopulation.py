@@ -4,8 +4,66 @@ import random
 import matplotlib.pyplot
 
 
+class Population:
+    #initialize a random population of n entires between minNum and maxNum
+    def __init__(self, minNum, maxNum, n):
+        self.min= minNum
+        self.max = maxNum
+        self.n = n
+        
+        self.pop = []
+        for x in range(n):
+            self.pop.append(random.randint(self.min,self.max))
+            
+        self.pop_mean =  np.mean(self.pop)
+        self.pop_stdev = np.std(self.pop)
+        self.pop_var = np.var(self.pop)
+        self.pop_n = len(self.pop)
+    
+    #sets up the histogram plot based on if an arguement was passed or not
+    def plot_population(self, data = []):
+        #if no data is passed in, then self.pop aka the population that is made when the class is initialized is plotted. If some data is passed in, then that data is plotted
+        if data == []:
+            data = self.pop
+        self.__hist__(data)
+    
+    #plots histogram
+    def __hist__(self, data):
+        fig = matplotlib.pyplot.figure()
+        matplotlib.pyplot.hist(data, bins=101, density=False)
+        fig.suptitle('Frequency', fontsize=15)
+        matplotlib.pyplot.xlabel("Number")
+        matplotlib.pyplot.ylabel("Frequency")
+        #matplotlib.pyplot.xlim(0,100)
+        matplotlib.pyplot.show()
+    
+    #prints population parameters
+    def get_statistics(self):
+        print(f"Population n = {self.pop_n}")
+        print(f"Population Mean = {self.pop_mean}")
+        print(f"Population Variance = {self.pop_var}")
+        print(f"Population Standard Deviation = {self.pop_stdev}")
+    
+    #randomly picks sample, returns sample data
+    def get_sample(self, sample_size=30):
+        sample = random.sample(self.pop, sample_size)
+        return {
+            "n":len(sample),
+            "mean":np.mean(sample),
+            "bi-var":np.var(sample),
+            "unbi-var":np.var(sample, ddof=1),
+            "stdev":np.std(sample)
+        }
+    
+    #picks n number of samples and reeturns a list of all of their means
+    def get_sampling_distribution(self, n):
+        sample_mean_list = []
+        for i in range(n):
+            sample_mean_list.append(self.get_sample()["mean"])
+        return sample_mean_list
+    
 
-class NormalPopulation:
+class NormalPopulation(Population):
     
     def __init__(self, mean, stdev, n):
         self.mean = mean
@@ -17,33 +75,10 @@ class NormalPopulation:
         self.pop_stdev = np.std(self.pop)
         self.pop_var = np.var(self.pop)
         self.pop_n = len(self.pop)
-        
-    def plot_population(self):
-        fig = matplotlib.pyplot.figure()
-        matplotlib.pyplot.hist(self.pop, bins=50, density=True)
-        fig.suptitle('Population Density', fontsize=15)
-        matplotlib.pyplot.xlabel("Number")
-        matplotlib.pyplot.ylabel("Frequency")
-        matplotlib.pyplot.show()
-    
-    def get_statistics(self):
-        print(f"Population n = {self.pop_n}")
-        print(f"Population Mean = {self.pop_mean}")
-        print(f"Population Variance = {self.pop_var}")
-        print(f"Population Standard Deviation = {self.pop_stdev}")
-    
-    def get_sample(self, sample_size=30):
-        sample = random.sample(self.pop, sample_size)
-        return {
-            "n":len(sample),
-            "mean":np.mean(sample),
-            "bi-var":np.var(sample),
-            "unbi-var":np.var(sample, ddof=1),
-            "stdev":np.std(sample)
-        }
-    def get_samples(self, num_samples_max, sample_size=30, printed_sample = 100):
+
+    def get_samples_mean_variances(self, num_samples_max, sample_size=30):
         aggregate_df = pd.DataFrame(columns = ["Number of Samples", "Mean Biased Variance", "Mean Unbiased Variance"])
-        for i in range(1,num_samples_max+1):
+        for i in range(1,num_samples_max+1, 50):
             temp_df = pd.DataFrame(columns = ["Mean", "Biased Variance", "Unbiased Variance"])
             for j in range(i):
                 sample = self.get_sample(sample_size)
