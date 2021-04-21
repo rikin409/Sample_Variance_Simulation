@@ -56,10 +56,10 @@ class Population:
         }
     
     #picks n number of samples and reeturns a list of all of their means
-    def get_sampling_distribution(self, n):
+    def get_sampling_distribution(self, n, sample_size =30):
         sample_mean_list = []
         for i in range(n):
-            sample_mean_list.append(self.get_sample()["mean"])
+            sample_mean_list.append(self.get_sample(sample_size)["mean"])
         return sample_mean_list
     
 
@@ -78,7 +78,7 @@ class NormalPopulation(Population):
 
     def get_samples_mean_variances(self, num_samples_max, sample_size=30):
         aggregate_df = pd.DataFrame(columns = ["Number of Samples", "Mean Biased Variance", "Mean Unbiased Variance"])
-        for i in range(1,num_samples_max+1, 50):
+        for i in range(1,num_samples_max+1, 5):
             temp_df = pd.DataFrame(columns = ["Mean", "Biased Variance", "Unbiased Variance"])
             for j in range(i):
                 sample = self.get_sample(sample_size)
