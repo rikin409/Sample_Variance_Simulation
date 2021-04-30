@@ -52,7 +52,8 @@ class Population:
             "mean":np.mean(sample),
             "bi-var":np.var(sample),
             "unbi-var":np.var(sample, ddof=1),
-            "stdev":np.std(sample)
+            "stdev":np.std(sample, ddof = 1),
+            "sample":sample
         }
     
     #picks n number of samples and reeturns a list of all of their means
